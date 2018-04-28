@@ -77,12 +77,12 @@ class DistanceCalculator {
         double distance = 0;
         int d = one.numAttributes() - 1;
         for (int i = 0; i < d; i++) {
-            if (distance < maxDistance) {
-                distance += Math.pow(one.value(i) - two.value(i), p);
+            distance += Math.pow(one.value(i) - two.value(i), p);
+            if (Math.pow(distance, (double) 1 / p) > maxDistance) {
+                i = d;
             }
         }
-
-        return Math.pow(distance,(double) 1 / p);
+        return Math.pow(distance, (double) 1 / p);
     }
 
     /**
@@ -94,16 +94,19 @@ class DistanceCalculator {
     private double efficientLInfinityDistance(Instance one, Instance two, double maxDistance) {
         double distance = 0;
         int d = one.numAttributes();
-        double maxDistaceSeen = Math.abs(one.value(0) - two.value(0));
+        double maxDistanceSeen = Math.abs(one.value(0) - two.value(0));
         for (int i = 1; i < d; i++) {
-            if (maxDistaceSeen < maxDistance) {
+            if (maxDistanceSeen < maxDistance) {
                 distance = Math.abs(one.value(i) - two.value(i));
-                if (maxDistaceSeen < distance) {
-                    maxDistaceSeen = distance;
+                if (maxDistanceSeen < distance) {
+                    maxDistanceSeen = distance;
                 }
             }
-            return maxDistaceSeen;
+            else{
+                i = d;
+            }
         }
+        return maxDistanceSeen;
     }
 }
 
