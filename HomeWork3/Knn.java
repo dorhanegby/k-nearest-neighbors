@@ -150,6 +150,8 @@ public class Knn implements Classifier {
         this.folds = folds;
         this.distanceCheck = distanceCheck;
         this.weights = weights;
+
+        crossValidationError(instances, folds);
     }
 
     /**
@@ -192,20 +194,33 @@ public class Knn implements Classifier {
      * @return The cross validation error.
      */
     public double crossValidationError(Instances instances, int num_of_folds){
+        // Shuffle the data
         Random rand = new Random();
         Instances randData = new Instances(instances);
         randData.randomize(rand);
 
         Instances[] bins = new Instances[num_of_folds];
 
-        int instancesPerBin = (randData.size() / num_of_folds);
-        if((randData.size() / num_of_folds) % 10 != 0) {
-            instancesPerBin++;
-        }
-        for(int i=0;i<bins.length;i++) {
+        int instancesPerBin;
 
-            bins[i] = new Instances(randData, instancesPerBin * i, (instancesPerBin * i) + instancesPerBin);
+        if(randData.size() % num_of_folds == 0) {
+            instancesPerBin = (randData.size() / num_of_folds);
+            for(int i=0;i<bins.length;i++) {
+
+                bins[i] = new Instances(randData, instancesPerBin * i, instancesPerBin);
+            }
         }
+
+        else {
+            instancesPerBin = (randData.size() / (num_of_folds - 1));
+            for(int i=0;i<bins.length - 1;i++) {
+
+                bins[i] = new Instances(randData, instancesPerBin * i, instancesPerBin);
+            }
+
+            bins[bins.length - 1] = new Instances(randData, instancesPerBin * (bins.length - 1), randData.size() % (num_of_folds - 1));
+        }
+
         return 0.0;
     }
 
