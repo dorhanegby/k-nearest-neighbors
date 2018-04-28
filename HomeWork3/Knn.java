@@ -81,8 +81,8 @@ class DistanceCalculator {
         double distance = 0;
         int d = one.numAttributes() - 1;
         for (int i = 0; i < d; i++) {
-            distance += Math.pow(one.value(i) - two.value(i), p);
-            if (Math.pow(distance, (double) 1 / p) > maxDistance) {
+            distance += Math.pow( Math.abs(one.value(i) - two.value(i)), p);
+            if (Math.pow(distance, (double) (1 / p)) > maxDistance) {
                 break;
             }
         }
@@ -214,7 +214,15 @@ public class Knn implements Classifier {
         randData.randomize(rand);
 
         int instancesPerBin = (int) Math.ceil((double) randData.size() / num_of_folds);
+
+
         double sum = 0;
+
+        // 159 / 50 = 3
+        // 159 / 3 = 53
+        // 53 - 50 = 3
+        // 3 * 3 = 9
+        // 9 * 4 + (50-9)*3
 
         for(int i=0;i<num_of_folds - 1;i++) {
             Instances testData = removeInstancesFromData(randData, i * instancesPerBin, ((i + 1) * instancesPerBin), true);
