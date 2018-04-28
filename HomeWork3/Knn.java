@@ -104,8 +104,8 @@ public class Knn implements Classifier {
      * Finds the k nearest neighbors.
      * @param instance
      */
-    public /* Collection of your choice */ findNearestNeighbors(Instance instance) {
-
+    public int findNearestNeighbors(Instance instance) {
+        return 0;
     }
 
     /**

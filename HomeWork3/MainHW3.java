@@ -29,7 +29,9 @@ public class MainHW3 {
 	}
 
 	public static void main(String[] args) throws Exception {
-        //TODO: complete the Main method
+        Instances data = loadData("./HomeWork3/Data/auto_price.txt");
+        FeatureScaler featureScaler = new FeatureScaler();
+        Instances scaledData = featureScaler.scaleData(data);
 	}
 
 }
