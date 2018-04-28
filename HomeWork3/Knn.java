@@ -6,12 +6,15 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 class DistanceCalculator {
+
+    private static final int INFINITY = Integer.MAX_VALUE;
+
     /**
     * We leave it up to you wheter you want the distance method to get all relevant
     * parameters(lp, efficient, etc..) or have it has a class variables.
     */
-    public double distance (Instance one, Instance two) {
-        return 0.0;
+    public double distance (Instance one, Instance two, int p, boolean isEfficent) {
+
     }
 
     /**
@@ -19,7 +22,7 @@ class DistanceCalculator {
      * @param one
      * @param two
      */
-    private double lpDisatnce(Instance one, Instance two) {
+    private double lpDisatnce(Instance one, Instance two, int p) {
         return 0.0;
     }
 
@@ -39,7 +42,7 @@ class DistanceCalculator {
      * @param two
      * @return
      */
-    private double efficientLpDisatnce(Instance one, Instance two) {
+    private double efficientLpDisatnce(Instance one, Instance two, int p) {
         return 0.0;
     }
 
