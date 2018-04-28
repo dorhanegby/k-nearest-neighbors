@@ -15,7 +15,7 @@ import java.util.Random;
 
 class DistanceCalculator {
 
-    private static final int INFINITY = Integer.MAX_VALUE;
+    public static final int INFINITY = Integer.MAX_VALUE;
 
     /**
     * We leave it up to you wheter you want the distance method to get all relevant
@@ -49,7 +49,7 @@ class DistanceCalculator {
             distance += Math.pow(one.value(i) - two.value(i), p);
         }
 
-        return Math.pow(distance,(double) 1 / p);
+        return Math.pow(distance, (double) (1 / p));
     }
 
     /**
@@ -154,7 +154,6 @@ public class Knn implements Classifier {
         this.distanceCheck = distanceCheck;
         this.weights = weights;
 
-        System.out.println(crossValidationError(instances, folds));
     }
 
     /**
@@ -181,7 +180,7 @@ public class Knn implements Classifier {
                 }
             }
         }
-        return sum / sumOfWeights;
+        return knn.size() > 1 ? sum / sumOfWeights : knn.get(0).getKey().classValue();
     }
 
     /**
