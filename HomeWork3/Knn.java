@@ -1,9 +1,13 @@
 package HomeWork3;
 
+import javafx.util.Pair;
 import weka.classifiers.Classifier;
 import weka.core.Capabilities;
 import weka.core.Instance;
 import weka.core.Instances;
+
+import java.util.HashMap;
+import java.util.PriorityQueue;
 
 class DistanceCalculator {
 
@@ -36,10 +40,11 @@ class DistanceCalculator {
      */
     private double lpDisatnce(Instance one, Instance two, int p) {
         double distance = 0;
-        int d = one.numAttributes();
+        int d = one.numAttributes() - 1;
         for (int i = 0; i < d; i++) {
             distance += Math.pow(one.value(i) - two.value(i), p);
         }
+
         return Math.pow(distance,(double) 1 / p);
     }
 
@@ -68,9 +73,9 @@ class DistanceCalculator {
      * @param two
      * @return
      */
-    private double efficientLpDisatnce(Instance one, Instance two, int p) {
+    private double efficientLpDisatnce(Instance one, Instance two, int p, double maxDistance) {
         double distance = 0;
-        
+        return 0.0;
     }
 
     /**
@@ -79,12 +84,14 @@ class DistanceCalculator {
      * @param two
      * @return
      */
-    private double efficientLInfinityDistance(Instance one, Instance two) {
+    private double efficientLInfinityDistance(Instance one, Instance two, double maxDistance) {
         return 0.0;
     }
 }
 
 public class Knn implements Classifier {
+
+    private static final int INFINITY = Integer.MAX_VALUE;
 
     /**
      * State of Knn class
@@ -96,11 +103,13 @@ public class Knn implements Classifier {
     private DistanceCheck distanceCheck;
     private int folds;
     private Weights weights;
+    private DistanceCalculator distanceCalculator = new DistanceCalculator();
 
 
     @Override
     public void buildClassifier(Instances instances) {
         // Fallback to defaults
+        this.m_trainingInstances = instances;
         this.K = 2;
         this.P = 2;
         this.folds = 10;
@@ -162,11 +171,52 @@ public class Knn implements Classifier {
      * Finds the k nearest neighbors.
      * @param instance
      */
-    public Instances findNearestNeighbors(Instance instance) {
-        // Steps:
-        // 1. forEach i in instances => D(i, instances)
-        // 2. save k min D
-        return null;
+    public Instance[] findNearestNeighbors(Instance instance) {
+
+        PriorityQueue<Pair<Instance, Double>> minHeap = new PriorityQueue<>((one, two) -> (int)(one.getValue() - two.getValue()));
+        PriorityQueue<Pair<Instance, Double>> maxHeap = new PriorityQueue<>((one, two) -> (int)(two.getValue() - one.getValue()));
+
+        buildFirstKNodes(minHeap, maxHeap, instance);
+        findKMins(minHeap, maxHeap, instance);
+
+        return extractKMins(minHeap);
+
+    }
+
+    private Instance[] extractKMins(PriorityQueue<Pair<Instance, Double>> minHeap) {
+        Instance[] kNN = new Instance[this.K];
+
+        for(int i=0;i<this.K;i++) {
+            kNN[i] = minHeap.poll().getKey();
+        }
+        return kNN;
+    }
+
+    private void buildFirstKNodes(PriorityQueue<Pair<Instance, Double>> minHeap, PriorityQueue<Pair<Instance, Double>> maxHeap, Instance instance) {
+        for(int i=0;i<this.K;i++) {
+            Pair<Instance, Double> heapNode = getHeapNode(instance, this.m_trainingInstances.get(i));
+            minHeap.add(heapNode);
+            maxHeap.add(heapNode);
+        }
+    }
+
+    private void findKMins(PriorityQueue<Pair<Instance, Double>> minHeap, PriorityQueue<Pair<Instance, Double>> maxHeap, Instance instance) {
+        for (int i = this.K; i < this.m_trainingInstances.size(); i++) {
+            Pair<Instance, Double> heapNode = getHeapNode(instance, this.m_trainingInstances.get(i));
+            if (heapNode.getValue() < maxHeap.peek().getValue()) {
+                minHeap.add(heapNode);
+                maxHeap.add(heapNode);
+                Pair<Instance, Double> nodeToRemove = maxHeap.poll();
+                minHeap.remove(nodeToRemove);
+            }
+        }
+    }
+
+
+
+    private Pair<Instance, Double> getHeapNode(Instance instance, Instance  instanceToCompare) {
+        double distance = distanceCalculator.distance(instance, instanceToCompare, this.P, this.distanceCheck);
+        return new Pair<>(instanceToCompare, distance);
     }
 
     /**

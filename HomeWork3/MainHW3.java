@@ -33,8 +33,8 @@ public class MainHW3 {
         FeatureScaler featureScaler = new FeatureScaler();
         Instances scaledData = featureScaler.scaleData(data);
 
-
-        // f(data, p, k, 10)
+        Knn knn = new Knn();
+        knn.buildClassifier(scaledData, 5, 2, 10, Knn.DistanceCheck.Regular, Knn.Weights.Uniform);
 	}
 
 }
