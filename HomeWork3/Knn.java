@@ -18,10 +18,19 @@ class DistanceCalculator {
     * parameters(lp, efficient, etc..) or have it has a class variables.
     */
     public double distance (Instance one, Instance two, int p, Knn.DistanceCheck distanceCheck) {
-        // Formula params:
-        // d = one.numAttributes()
-        // p = p
-        return 0.0;
+        double distance = 0;
+        if (distanceCheck == distanceCheck.Efficient) {
+            if (p == INFINITY) {
+                distance = efficientLInfinityDistance(one, two);
+            } else {
+                distance = efficientLpDisatnce(one, two, p);
+            }
+        } else if (p == INFINITY) {
+            distance = lInfinityDistance(one, two);
+        } else {
+            distance = lpDisatnce(one, two, p);
+        }
+        return distance;
     }
 
     /**
@@ -30,7 +39,12 @@ class DistanceCalculator {
      * @param two
      */
     private double lpDisatnce(Instance one, Instance two, int p) {
-        return 0.0;
+        double distance = 0;
+        int d = one.numAttributes();
+        for (int i = 0; i < d; i++) {
+            distance += Math.pow(one.value(i) - two.value(i), p);
+        }
+        return Math.pow(distance,(double) 1 / p);
     }
 
     /**
@@ -40,7 +54,16 @@ class DistanceCalculator {
      * @return
      */
     private double lInfinityDistance(Instance one, Instance two) {
-        return 0.0;
+        double distance = 0;
+        int d = one.numAttributes();
+        double maxDistance = Math.abs(one.value(0) - two.value(0));
+        for (int i = 1; i < d; i++) {
+            distance = Math.abs(one.value(i) - two.value(i));
+            if (maxDistance < distance) {
+                maxDistance = distance;
+            }
+        }
+        return distance;
     }
 
     /**
@@ -50,7 +73,8 @@ class DistanceCalculator {
      * @return
      */
     private double efficientLpDisatnce(Instance one, Instance two, int p) {
-        return 0.0;
+        double distance = 0;
+        
     }
 
     /**
