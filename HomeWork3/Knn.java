@@ -79,7 +79,7 @@ class DistanceCalculator {
         for (int i = 0; i < d; i++) {
             distance += Math.pow(one.value(i) - two.value(i), p);
             if (Math.pow(distance, (double) 1 / p) > maxDistance) {
-                i = d;
+                break;
             }
         }
         return Math.pow(distance, (double) 1 / p);
@@ -101,9 +101,8 @@ class DistanceCalculator {
                 if (maxDistanceSeen < distance) {
                     maxDistanceSeen = distance;
                 }
-            }
-            else{
-                i = d;
+            } else {
+                break;
             }
         }
         return maxDistanceSeen;
