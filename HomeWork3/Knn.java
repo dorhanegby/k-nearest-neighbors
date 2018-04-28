@@ -81,7 +81,8 @@ class DistanceCalculator {
                 distance += Math.pow(one.value(i) - two.value(i), p);
             }
         }
-        return distance;
+
+        return Math.pow(distance,(double) 1 / p);
     }
 
     /**
