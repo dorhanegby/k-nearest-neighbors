@@ -32,6 +32,9 @@ public class MainHW3 {
         Instances data = loadData("./HomeWork3/Data/auto_price.txt");
         FeatureScaler featureScaler = new FeatureScaler();
         Instances scaledData = featureScaler.scaleData(data);
+
+
+        // f(data, p, k, 10)
 	}
 
 }

@@ -13,8 +13,11 @@ class DistanceCalculator {
     * We leave it up to you wheter you want the distance method to get all relevant
     * parameters(lp, efficient, etc..) or have it has a class variables.
     */
-    public double distance (Instance one, Instance two, int p, boolean isEfficent) {
-
+    public double distance (Instance one, Instance two, int p, Knn.DistanceCheck distanceCheck) {
+        // Formula params:
+        // d = one.numAttributes()
+        // p = p
+        return 0.0;
     }
 
     /**
@@ -59,17 +62,40 @@ class DistanceCalculator {
 
 public class Knn implements Classifier {
 
-    public enum DistanceCheck{Regular, Efficient}
+    /**
+     * State of Knn class
+     */
+
     private Instances m_trainingInstances;
+    private int K;
+    private int P;
+    private DistanceCheck distanceCheck;
+    private int folds;
+    private Weights weights;
+
 
     @Override
+    public void buildClassifier(Instances instances) {
+        // Fallback to defaults
+        this.K = 2;
+        this.P = 2;
+        this.folds = 10;
+        this.distanceCheck = DistanceCheck.Regular;
+        this.weights = Weights.Uniform;
+    }
+
     /**
      * Build the knn classifier. In our case, simply stores the given instances for 
      * later use in the prediction.
      * @param instances
      */
-    public void buildClassifier(Instances instances) throws Exception {
-
+    public void buildClassifier(Instances instances, int K, int P, int folds, DistanceCheck distanceCheck, Weights weights) throws Exception {
+        this.m_trainingInstances = instances;
+        this.K = K;
+        this.P = P;
+        this.folds = folds;
+        this.distanceCheck = distanceCheck;
+        this.weights = weights;
     }
 
     /**
@@ -78,6 +104,11 @@ public class Knn implements Classifier {
      * @return The instance predicted value.
      */
     public double regressionPrediction(Instance instance) {
+        // Steps:
+        // 1. find knn :: Instances
+        // 2. calcAvgError :: Double
+        // return it.
+
         return 0.0;
     }
 
@@ -107,8 +138,11 @@ public class Knn implements Classifier {
      * Finds the k nearest neighbors.
      * @param instance
      */
-    public int findNearestNeighbors(Instance instance) {
-        return 0;
+    public Instances findNearestNeighbors(Instance instance) {
+        // Steps:
+        // 1. forEach i in instances => D(i, instances)
+        // 2. save k min D
+        return null;
     }
 
     /**
@@ -116,7 +150,7 @@ public class Knn implements Classifier {
      * @param
      * @return
      */
-    public double getAverageValue (/* Collection of your choice */) {
+    public double getAverageValue (Instances instances) {
         return 0.0;
     }
 
@@ -125,7 +159,7 @@ public class Knn implements Classifier {
      * with respect to their distance from a specific instance.
      * @return
      */
-    public double getWeightedAverageValue(/* Collection of your choice */) {
+    public double getWeightedAverageValue(Instances instances) {
         return 0.0;
     }
 
@@ -147,4 +181,15 @@ public class Knn implements Classifier {
         // TODO Auto-generated method stub - You can ignore.
         return 0.0;
     }
+
+    public enum DistanceCheck {
+        Regular,
+        Efficient
+    }
+
+    public enum Weights {
+        Uniform,
+        Weighted
+    }
+
 }
