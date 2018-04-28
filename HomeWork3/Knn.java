@@ -17,13 +17,13 @@ class DistanceCalculator {
     * We leave it up to you wheter you want the distance method to get all relevant
     * parameters(lp, efficient, etc..) or have it has a class variables.
     */
-    public double distance (Instance one, Instance two, int p, Knn.DistanceCheck distanceCheck) {
+    public double distance (Instance one, Instance two, int p, Knn.DistanceCheck distanceCheck, double maxDistance) {
         double distance = 0;
         if (distanceCheck == distanceCheck.Efficient) {
             if (p == INFINITY) {
-                distance = efficientLInfinityDistance(one, two);
+                distance = efficientLInfinityDistance(one, two, maxDistance);
             } else {
-                distance = efficientLpDisatnce(one, two, p);
+                distance = efficientLpDisatnce(one, two, p, maxDistance);
             }
         } else if (p == INFINITY) {
             distance = lInfinityDistance(one, two);
@@ -194,7 +194,7 @@ public class Knn implements Classifier {
 
     private void buildFirstKNodes(PriorityQueue<Pair<Instance, Double>> minHeap, PriorityQueue<Pair<Instance, Double>> maxHeap, Instance instance) {
         for(int i=0;i<this.K;i++) {
-            Pair<Instance, Double> heapNode = getHeapNode(instance, this.m_trainingInstances.get(i));
+            Pair<Instance, Double> heapNode = getHeapNode(instance, this.m_trainingInstances.get(i), Double.POSITIVE_INFINITY);
             minHeap.add(heapNode);
             maxHeap.add(heapNode);
         }
@@ -202,7 +202,7 @@ public class Knn implements Classifier {
 
     private void findKMins(PriorityQueue<Pair<Instance, Double>> minHeap, PriorityQueue<Pair<Instance, Double>> maxHeap, Instance instance) {
         for (int i = this.K; i < this.m_trainingInstances.size(); i++) {
-            Pair<Instance, Double> heapNode = getHeapNode(instance, this.m_trainingInstances.get(i));
+            Pair<Instance, Double> heapNode = getHeapNode(instance, this.m_trainingInstances.get(i), Double.POSITIVE_INFINITY);
             if (heapNode.getValue() < maxHeap.peek().getValue()) {
                 minHeap.add(heapNode);
                 maxHeap.add(heapNode);
@@ -214,8 +214,8 @@ public class Knn implements Classifier {
 
 
 
-    private Pair<Instance, Double> getHeapNode(Instance instance, Instance  instanceToCompare) {
-        double distance = distanceCalculator.distance(instance, instanceToCompare, this.P, this.distanceCheck);
+    private Pair<Instance, Double> getHeapNode(Instance instance, Instance  instanceToCompare, double maxDistance) {
+        double distance = distanceCalculator.distance(instance, instanceToCompare, this.P, this.distanceCheck, maxDistance);
         return new Pair<>(instanceToCompare, distance);
     }
 
