@@ -5,6 +5,8 @@ import weka.classifiers.Classifier;
 import weka.core.Capabilities;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.filters.Filter;
+import weka.filters.unsupervised.instance.RemoveRange;
 
 import java.util.HashMap;
 import java.util.PriorityQueue;
@@ -151,7 +153,7 @@ public class Knn implements Classifier {
         this.distanceCheck = distanceCheck;
         this.weights = weights;
 
-        crossValidationError(instances, folds);
+        System.out.println(crossValidationError(instances, folds));
     }
 
     /**
@@ -193,35 +195,58 @@ public class Knn implements Classifier {
      * @param num_of_folds The number of folds to use.
      * @return The cross validation error.
      */
-    public double crossValidationError(Instances instances, int num_of_folds){
+    public double crossValidationError(Instances instances, int num_of_folds) throws Exception {
         // Shuffle the data
         Random rand = new Random();
         Instances randData = new Instances(instances);
         randData.randomize(rand);
 
-        Instances[] bins = new Instances[num_of_folds];
+        int instancesPerBin = (int) Math.ceil((double) randData.size() / num_of_folds);
+        double sum = 0;
 
-        int instancesPerBin;
+        for(int i=0;i<num_of_folds - 1;i++) {
+            Instances testData = removeInstancesFromData(randData, i * instancesPerBin, ((i + 1) * instancesPerBin), true);
+            Instances trainingData = removeInstancesFromData(randData, i * instancesPerBin, ((i + 1) * instancesPerBin), false);
 
-        if(randData.size() % num_of_folds == 0) {
-            instancesPerBin = (randData.size() / num_of_folds);
-            for(int i=0;i<bins.length;i++) {
-
-                bins[i] = new Instances(randData, instancesPerBin * i, instancesPerBin);
-            }
+            this.m_trainingInstances = trainingData;
+            sum += calcAvgError(testData);
         }
 
+        Instances testData = removeInstancesFromData(randData, (num_of_folds - 1) * instancesPerBin, randData.size(), true);
+        Instances trainingData = removeInstancesFromData(randData, (num_of_folds - 1) * instancesPerBin, randData.size(), false);
+
+        this.m_trainingInstances = trainingData;
+        sum += calcAvgError(testData);
+
+
+
+        return sum / num_of_folds;
+    }
+
+    private Instances removeInstancesFromData(Instances data, int from, int to, boolean inverted) throws Exception {
+        RemoveRange filter = new RemoveRange();
+        if(!inverted){
+            String[] options = { "-R" , createStringFromTo(from + 1, to + 1)};
+            filter.setOptions(options);
+        }
         else {
-            instancesPerBin = (randData.size() / (num_of_folds - 1));
-            for(int i=0;i<bins.length - 1;i++) {
+            String[] options = { "-R" , createStringFromTo(from + 1, to + 1), "-V"};
+            filter.setOptions(options);
+        }
+        filter.setInputFormat(data);
 
-                bins[i] = new Instances(randData, instancesPerBin * i, instancesPerBin);
-            }
+        return Filter.useFilter(data, filter);
+    }
 
-            bins[bins.length - 1] = new Instances(randData, instancesPerBin * (bins.length - 1), randData.size() % (num_of_folds - 1));
+    private String createStringFromTo(int from, int to) {
+        String string = "";
+        for (int i = from; i < to - 1; i++) {
+            string += i + ",";
         }
 
-        return 0.0;
+        string += to - 1;
+
+        return string;
     }
 
 
