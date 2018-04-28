@@ -97,7 +97,7 @@ class DistanceCalculator {
      */
     private double efficientLInfinityDistance(Instance one, Instance two, double maxDistance) {
         double distance = 0;
-        int d = one.numAttributes();
+        int d = one.numAttributes() - 1;
         double maxDistanceSeen = Math.abs(one.value(0) - two.value(0));
         for (int i = 1; i < d; i++) {
             if (maxDistanceSeen < maxDistance) {
