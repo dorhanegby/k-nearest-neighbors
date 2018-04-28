@@ -46,7 +46,7 @@ class DistanceCalculator {
         double distance = 0;
         int d = one.numAttributes() - 1;
         for (int i = 0; i < d; i++) {
-            distance += Math.pow(one.value(i) - two.value(i), p);
+            distance += Math.pow(Math.abs(one.value(i) - two.value(i)), p);
         }
 
         return Math.pow(distance, (double) (1 / p));
@@ -60,7 +60,7 @@ class DistanceCalculator {
      */
     private double lInfinityDistance(Instance one, Instance two) {
         double distance = 0;
-        int d = one.numAttributes();
+        int d = one.numAttributes() - 1;
         double maxDistance = Math.abs(one.value(0) - two.value(0));
         for (int i = 1; i < d; i++) {
             distance = Math.abs(one.value(i) - two.value(i));
@@ -86,7 +86,7 @@ class DistanceCalculator {
                 break;
             }
         }
-        return Math.pow(distance, (double) 1 / p);
+        return Math.pow(distance, (double) (1 / p));
     }
 
     /**

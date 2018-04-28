@@ -76,6 +76,10 @@ public class MainHW3 {
 		System.out.println("Cross validation error with K = " + maxK + ", lp = " + maxLp + ", majority function = " + getWeight(maxW) +" for auto_price data is: " + minError);
 	}
 
+	private String InfinityToText (int num) {
+		return num == Double.POSITIVE_INFINITY ? "Infinity" : (num + "");
+	}
+
 	private static Knn.Weights getWeight(int num) {
 		return num == 0 ? Knn.Weights.Uniform : Knn.Weights.Weighted;
 	}
