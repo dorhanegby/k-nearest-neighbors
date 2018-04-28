@@ -8,6 +8,7 @@ import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.unsupervised.instance.RemoveRange;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.Random;
@@ -130,7 +131,7 @@ public class Knn implements Classifier {
 
 
     @Override
-    public void buildClassifier(Instances instances) {
+    public void buildClassifier(Instances instances) throws Exception {
         // Fallback to defaults
         this.m_trainingInstances = instances;
         this.K = 2;
@@ -162,13 +163,25 @@ public class Knn implements Classifier {
      * @return The instance predicted value.
      */
     public double regressionPrediction(Instance instance) {
-        Instance[] knn = findNearestNeighbors(instance);
+        ArrayList<Pair<Instance, Double>> knn = findNearestNeighbors(instance);
         double sum = 0.0;
+        double sumOfWeights = 0.0;
+        for (int i = 0; i < knn.size(); i++) {
+            if(this.weights == Weights.Uniform) {
+                sum += knn.get(i).getKey().classValue();
+                sumOfWeights = knn.size();
+            }
+            else {
+                double distance = knn.get(i).getValue();
 
-        for (int i = 0; i < knn.length; i++) {
-            sum += knn[i].classValue();
+                if(distance != 0) {
+                    double weight = ((double) 1 / Math.pow(distance, 2));
+                    sumOfWeights += weight;
+                    sum += weight * (knn.get(i).getKey().classValue());
+                }
+            }
         }
-        return sum / knn.length;
+        return sum / sumOfWeights;
     }
 
     /**
@@ -254,7 +267,7 @@ public class Knn implements Classifier {
      * Finds the k nearest neighbors.
      * @param instance
      */
-    public Instance[] findNearestNeighbors(Instance instance) {
+    public ArrayList<Pair<Instance, Double>> findNearestNeighbors(Instance instance) {
 
         PriorityQueue<Pair<Instance, Double>> minHeap = new PriorityQueue<>((one, two) -> (int)(one.getValue() - two.getValue()));
         PriorityQueue<Pair<Instance, Double>> maxHeap = new PriorityQueue<>((one, two) -> (int)(two.getValue() - one.getValue()));
@@ -265,11 +278,11 @@ public class Knn implements Classifier {
 
     }
 
-    private Instance[] extractKMins(PriorityQueue<Pair<Instance, Double>> minHeap) {
-        Instance[] kNN = new Instance[this.K];
+    private ArrayList<Pair<Instance, Double>> extractKMins(PriorityQueue<Pair<Instance, Double>> minHeap) {
+        ArrayList<Pair<Instance, Double>> kNN = new ArrayList<>(this.K);
 
         for(int i=0;i<this.K;i++) {
-            kNN[i] = minHeap.poll().getKey();
+            kNN.add(minHeap.poll());
         }
         return kNN;
     }

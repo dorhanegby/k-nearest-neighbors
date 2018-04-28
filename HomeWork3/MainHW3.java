@@ -34,7 +34,7 @@ public class MainHW3 {
         Instances scaledData = featureScaler.scaleData(data);
 
         Knn knn = new Knn();
-        knn.buildClassifier(scaledData, 5, 2, 10, Knn.DistanceCheck.Regular, Knn.Weights.Uniform);
+        knn.buildClassifier(scaledData, 5, 2, 10, Knn.DistanceCheck.Regular, Knn.Weights.Weighted);
 	}
 
 }
