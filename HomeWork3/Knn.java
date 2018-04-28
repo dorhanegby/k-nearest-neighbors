@@ -73,7 +73,7 @@ class DistanceCalculator {
      * @param two
      * @return
      */
-    private double efficientLpDisatnce(Instance one, Instance two, int p) {
+    private double efficientLpDisatnce(Instance one, Instance two, int p, double maxDistance) {
         double distance = 0;
         return 0.0;
     }
@@ -84,7 +84,7 @@ class DistanceCalculator {
      * @param two
      * @return
      */
-    private double efficientLInfinityDistance(Instance one, Instance two) {
+    private double efficientLInfinityDistance(Instance one, Instance two, double maxDistance) {
         return 0.0;
     }
 }
