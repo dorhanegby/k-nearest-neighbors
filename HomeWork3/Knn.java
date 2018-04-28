@@ -5,9 +5,12 @@ import weka.classifiers.Classifier;
 import weka.core.Capabilities;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.filters.Filter;
+import weka.filters.unsupervised.instance.RemoveRange;
 
 import java.util.HashMap;
 import java.util.PriorityQueue;
+import java.util.Random;
 
 class DistanceCalculator {
 
@@ -149,6 +152,8 @@ public class Knn implements Classifier {
         this.folds = folds;
         this.distanceCheck = distanceCheck;
         this.weights = weights;
+
+        System.out.println(crossValidationError(instances, folds));
     }
 
     /**
@@ -157,33 +162,91 @@ public class Knn implements Classifier {
      * @return The instance predicted value.
      */
     public double regressionPrediction(Instance instance) {
-        // Steps:
-        // 1. find knn :: Instances
-        // 2. calcAvgError :: Double
-        // return it.
+        Instance[] knn = findNearestNeighbors(instance);
+        double sum = 0.0;
 
-        return 0.0;
+        for (int i = 0; i < knn.length; i++) {
+            sum += knn[i].classValue();
+        }
+        return sum / knn.length;
     }
 
     /**
      * Caclcualtes the average error on a give set of instances.
      * The average error is the average absolute error between the target value and the predicted
-     * value across all insatnces.
-     * @param insatnces
+     * value across all instances.
+     * @param instances
      * @return
      */
-    public double calcAvgError (Instances insatnces){
-        return 0.0;
+    public double calcAvgError (Instances instances){
+        double sum = 0.0;
+
+        for(int i=0;i<instances.size();i++) {
+            Instance instance = instances.get(i);
+            sum += Math.abs(instance.classValue() - regressionPrediction(instance));
+        }
+
+        return sum / instances.size();
     }
 
     /**
      * Calculates the cross validation error, the average error on all folds.
-     * @param insances Insances used for the cross validation
+     * @param instances instances used for the cross validation
      * @param num_of_folds The number of folds to use.
      * @return The cross validation error.
      */
-    public double crossValidationError(Instances insances, int num_of_folds){
-        return 0.0;
+    public double crossValidationError(Instances instances, int num_of_folds) throws Exception {
+        // Shuffle the data
+        Random rand = new Random();
+        Instances randData = new Instances(instances);
+        randData.randomize(rand);
+
+        int instancesPerBin = (int) Math.ceil((double) randData.size() / num_of_folds);
+        double sum = 0;
+
+        for(int i=0;i<num_of_folds - 1;i++) {
+            Instances testData = removeInstancesFromData(randData, i * instancesPerBin, ((i + 1) * instancesPerBin), true);
+            Instances trainingData = removeInstancesFromData(randData, i * instancesPerBin, ((i + 1) * instancesPerBin), false);
+
+            this.m_trainingInstances = trainingData;
+            sum += calcAvgError(testData);
+        }
+
+        Instances testData = removeInstancesFromData(randData, (num_of_folds - 1) * instancesPerBin, randData.size(), true);
+        Instances trainingData = removeInstancesFromData(randData, (num_of_folds - 1) * instancesPerBin, randData.size(), false);
+
+        this.m_trainingInstances = trainingData;
+        sum += calcAvgError(testData);
+
+
+
+        return sum / num_of_folds;
+    }
+
+    private Instances removeInstancesFromData(Instances data, int from, int to, boolean inverted) throws Exception {
+        RemoveRange filter = new RemoveRange();
+        if(!inverted){
+            String[] options = { "-R" , createStringFromTo(from + 1, to + 1)};
+            filter.setOptions(options);
+        }
+        else {
+            String[] options = { "-R" , createStringFromTo(from + 1, to + 1), "-V"};
+            filter.setOptions(options);
+        }
+        filter.setInputFormat(data);
+
+        return Filter.useFilter(data, filter);
+    }
+
+    private String createStringFromTo(int from, int to) {
+        String string = "";
+        for (int i = from; i < to - 1; i++) {
+            string += i + ",";
+        }
+
+        string += to - 1;
+
+        return string;
     }
 
 
