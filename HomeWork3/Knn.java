@@ -40,7 +40,7 @@ class DistanceCalculator {
         for (int i = 0; i < d; i++) {
             distance += Math.pow(one.value(i) - two.value(i), p);
         }
-        return Math.pow(distance, 1 / p);
+        return Math.pow(distance,(double) 1 / p);
     }
 
     /**
