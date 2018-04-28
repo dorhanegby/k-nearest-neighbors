@@ -8,6 +8,7 @@ import weka.core.Instances;
 
 import java.util.HashMap;
 import java.util.PriorityQueue;
+import java.util.Random;
 
 class DistanceCalculator {
 
@@ -137,32 +138,54 @@ public class Knn implements Classifier {
      * @return The instance predicted value.
      */
     public double regressionPrediction(Instance instance) {
-        // Steps:
-        // 1. find knn :: Instances
-        // 2. calcAvgError :: Double
-        // return it.
+        Instance[] knn = findNearestNeighbors(instance);
+        double sum = 0.0;
 
-        return 0.0;
+        for (int i = 0; i < knn.length; i++) {
+            sum += knn[i].classValue();
+        }
+        return sum / knn.length;
     }
 
     /**
      * Caclcualtes the average error on a give set of instances.
      * The average error is the average absolute error between the target value and the predicted
-     * value across all insatnces.
-     * @param insatnces
+     * value across all instances.
+     * @param instances
      * @return
      */
-    public double calcAvgError (Instances insatnces){
-        return 0.0;
+    public double calcAvgError (Instances instances){
+        double sum = 0.0;
+
+        for(int i=0;i<instances.size();i++) {
+            Instance instance = instances.get(i);
+            sum += Math.abs(instance.classValue() - regressionPrediction(instance));
+        }
+
+        return sum / instances.size();
     }
 
     /**
      * Calculates the cross validation error, the average error on all folds.
-     * @param insances Insances used for the cross validation
+     * @param instances instances used for the cross validation
      * @param num_of_folds The number of folds to use.
      * @return The cross validation error.
      */
-    public double crossValidationError(Instances insances, int num_of_folds){
+    public double crossValidationError(Instances instances, int num_of_folds){
+        Random rand = new Random();
+        Instances randData = new Instances(instances);
+        randData.randomize(rand);
+
+        Instances[] bins = new Instances[num_of_folds];
+
+        int instancesPerBin = (randData.size() / num_of_folds);
+        if((randData.size() / num_of_folds) % 10 != 0) {
+            instancesPerBin++;
+        }
+        for(int i=0;i<bins.length;i++) {
+
+            bins[i] = new Instances(randData, instancesPerBin * i, (instancesPerBin * i) + instancesPerBin);
+        }
         return 0.0;
     }
 
