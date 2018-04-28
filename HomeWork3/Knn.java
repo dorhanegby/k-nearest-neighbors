@@ -70,7 +70,7 @@ class DistanceCalculator {
      */
     private double efficientLpDisatnce(Instance one, Instance two, int p) {
         double distance = 0;
-        
+        return 0.0;
     }
 
     /**
