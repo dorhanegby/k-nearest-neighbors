@@ -175,7 +175,6 @@ public class Knn implements Classifier {
 
         PriorityQueue<Pair<Instance, Double>> minHeap = new PriorityQueue<>((one, two) -> (int)(one.getValue() - two.getValue()));
         PriorityQueue<Pair<Instance, Double>> maxHeap = new PriorityQueue<>((one, two) -> (int)(two.getValue() - one.getValue()));
-
         buildFirstKNodes(minHeap, maxHeap, instance);
         findKMins(minHeap, maxHeap, instance);
 
@@ -202,7 +201,8 @@ public class Knn implements Classifier {
 
     private void findKMins(PriorityQueue<Pair<Instance, Double>> minHeap, PriorityQueue<Pair<Instance, Double>> maxHeap, Instance instance) {
         for (int i = this.K; i < this.m_trainingInstances.size(); i++) {
-            Pair<Instance, Double> heapNode = getHeapNode(instance, this.m_trainingInstances.get(i), Double.POSITIVE_INFINITY);
+            double maxDistance = this.distanceCheck == DistanceCheck.Regular ? Double.POSITIVE_INFINITY : maxHeap.peek().getValue();
+            Pair<Instance, Double> heapNode = getHeapNode(instance, this.m_trainingInstances.get(i),  maxDistance);
             if (heapNode.getValue() < maxHeap.peek().getValue()) {
                 minHeap.add(heapNode);
                 maxHeap.add(heapNode);
