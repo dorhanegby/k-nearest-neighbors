@@ -1,9 +1,13 @@
 package HomeWork3;
 
+import javafx.util.Pair;
 import weka.classifiers.Classifier;
 import weka.core.Capabilities;
 import weka.core.Instance;
 import weka.core.Instances;
+
+import java.util.HashMap;
+import java.util.PriorityQueue;
 
 class DistanceCalculator {
 
@@ -62,6 +66,8 @@ class DistanceCalculator {
 
 public class Knn implements Classifier {
 
+    private static final int INFINITY = Integer.MAX_VALUE;
+
     /**
      * State of Knn class
      */
@@ -77,6 +83,7 @@ public class Knn implements Classifier {
     @Override
     public void buildClassifier(Instances instances) {
         // Fallback to defaults
+        this.m_trainingInstances = instances;
         this.K = 2;
         this.P = 2;
         this.folds = 10;
@@ -138,11 +145,20 @@ public class Knn implements Classifier {
      * Finds the k nearest neighbors.
      * @param instance
      */
-    public Instances findNearestNeighbors(Instance instance) {
-        // Steps:
-        // 1. forEach i in instances => D(i, instances)
-        // 2. save k min D
-        return null;
+    public Instance[] findNearestNeighbors(Instance instance) {
+
+        PriorityQueue<Pair<Instance, Double>> minHeap = new PriorityQueue<>((one, two) -> (int)(one.getValue() - two.getValue()));
+        Instance[] kNN = new Instance[this.K];
+        DistanceCalculator distanceCalculator = new DistanceCalculator();
+
+
+        return kNN;
+    }
+
+    private Pair<Instance, Double> getHeapNode(Instance instance, Instance  instanceToCompare) {
+        DistanceCalculator distanceCalculator = new DistanceCalculator();
+        double distance = distanceCalculator.distance(instance, instanceToCompare, this.P, this.distanceCheck);
+        return new Pair<>(instance, distance);
     }
 
     /**
