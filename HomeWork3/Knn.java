@@ -214,21 +214,17 @@ public class Knn implements Classifier {
         randData.randomize(rand);
         double sum = 0;
         int instancesPerBin = randData.size() / num_of_folds;
-        int extraBins = randData.size() / instancesPerBin;
-        int extraInstances = 0;
-        if (extraBins > num_of_folds) {
-            extraInstances = (extraBins - num_of_folds) * instancesPerBin;
+        int extraInstances = randData.size() % num_of_folds;
+        if (extraInstances != 0) {
             for (int i = 0; i < extraInstances; i++) {
-                Instances testData = removeInstancesFromData(randData, i * instancesPerBin + 1, ((i + 1) * instancesPerBin), true);
-                Instances trainingData = removeInstancesFromData(randData, i * instancesPerBin + 1, ((i + 1) * instancesPerBin), false);
+                Instances testData = removeInstancesFromData(randData, i * (instancesPerBin + 1), ((i + 1) * (instancesPerBin + 1)), true);
+                Instances trainingData = removeInstancesFromData(randData, i * (instancesPerBin + 1), ((i + 1) * (instancesPerBin + 1)), false);
 
                 this.m_trainingInstances = trainingData;
                 sum += calcAvgError(testData);
             }
         }
-        int continuePos = extraInstances * (instancesPerBin + 1);
-
-        for (int i = continuePos; i < num_of_folds - 1; i++) {
+        for (int i = extraInstances; i < num_of_folds - 1; i++) {
             Instances testData = removeInstancesFromData(randData, i * instancesPerBin, ((i + 1) * instancesPerBin), true);
             Instances trainingData = removeInstancesFromData(randData, i * instancesPerBin, ((i + 1) * instancesPerBin), false);
 
