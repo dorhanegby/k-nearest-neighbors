@@ -321,25 +321,6 @@ public class Knn implements Classifier {
         return new Pair<>(instanceToCompare, distance);
     }
 
-    /**
-     * Cacluates the average value of the given elements in the collection.
-     * @param
-     * @return
-     */
-    public double getAverageValue (Instances instances) {
-        return 0.0;
-    }
-
-    /**
-     * Calculates the weighted average of the target values of all the elements in the collection
-     * with respect to their distance from a specific instance.
-     * @return
-     */
-    public double getWeightedAverageValue(Instances instances) {
-        return 0.0;
-    }
-
-
     @Override
     public double[] distributionForInstance(Instance arg0) throws Exception {
         // TODO Auto-generated method stub - You can ignore.
